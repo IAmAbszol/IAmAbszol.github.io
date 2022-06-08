@@ -14,6 +14,7 @@ One of my most sought after accomplishments has been to be able to tackle any dy
 
 Knapsack O/1 - Coin Change II
 Keep/Flip - Maximum Alternating Subsequence Sum
+Kadane's Algorithm - Best Sightseeing Pair
 
 ### [Coin Change II](https://leetcode.com/problems/coin-change-2/)
 
@@ -145,6 +146,138 @@ print(f'Maximum value of the subsequence is {maxAlternatingSum([6,2,1,2,4,5])}.'
 ```
 
     Maximum value of the subsequence is 10.
+
+
+### [Best Sightseeing Pair](https://leetcode.com/problems/best-sightseeing-pair/submissions/)
+
+The problem in itself may be easily solved using dynamic programming by constructing a N x N matrix and computing between the ith and jth columns our max value given the constraints listed by the problem itself. Below are some notes I have on the matter:
+
+```
+            8   1   5   2   6
+        8   8   8   11  11  11
+        1       1   5   6   9
+        5           5   6   9
+        2               2   7
+        6                   6
+        
+        dp[i][j] = max(
+            dp[i][j - 1],
+            dp[i + 1][j],
+            values[i] + values[j] + i - j
+        )
+        
+        Time O(n^2), Space O(n^2)
+```
+
+We can obviously do better by utilizing some knowledge gained by this.
+
+First off:
+1. We don't care about what made up the grand total.
+2. Everytime we step forward we lose 1 point. If I had 8 and stepped twice I would have 6 + ? where ? is the new number.
+    
+Instantly I began thinking of Kadane's Algorithm before even coming to the rationale of (2), thanks to Lee for this validation. This was kind of like the Rubber Duck where speaking to the duck solves your problems, in the real-world this would be an interviewer where they could mention this again for clarity sakes.
+
+Therefore we can construct a Kadane Algorithmic approach to finding the maximum by using two variables, thus constant space O(1).
+- current: Best value thus far, each step we subtract the result by 1 as we're stepping forward.
+- best: Best value overall.
+
+The code for Kadane is really simple and is listed below.
+
+Thanks to Lee for the clarity:
+
+
+
+```python
+from typing import List
+
+def maxScoreSightseeingPair(values: List[int]) -> int:
+    current, best = float('-inf'), float('-inf')
+    for value in values:
+        best = max(best, current + value)
+        current = max(current, value) - 1
+    return best
+print(f'Best Sightseeing Pair Value {maxScoreSightseeingPair([8,1,5,2,6])}.')
+```
+
+    Best Sightseeing Pair Value 11.
+
+
+Thanks to Lee for the clarity: [link](https://leetcode.com/problems/best-sightseeing-pair/discuss/260850/JavaC%2B%2BPython-One-Pass-O(1)-space)
+
+```
+Also we can update cur by max(cur, a). <-- Kadane
+Note that when we move forward,
+all sightseeing spot we have seen will be 1 distance further. <-- Modification
+```
+
+### [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)
+
+One of my more favorite types of problems, falling under largest square, we need to evaluate the series of characters in the subsequence towards the main array. 
+
+We can start out by constructing a O(nm) matrix where **n** represents **text1** and **m** represents **text2**. The row, columns or ith row and jth column represents the characters between i and j in the main string. 
+
+We'll compare each character starting from the first character in **text2**, to make it more simple we'll use the first example where:
+```
+text1 = 'abcde'
+text2 = 'ace'
+
+    a    b    c    d    e
+a   1
+c        0
+e             0
+```
+
+With our matrix setup where text1[j] == text2[i] is seen above and represented as 1 if they match else 0.
+
+Now if we were to continue, lets start at the first row where our subsequence only has the letter a to evaluate. In that case we'll iterate over the top and bring 1 across the entire way to validate that **a** had existed in the string. 
+
+```
+text1 = 'abcde'
+text2 = 'ace'
+
+    a    b    c    d    e
+a   1    1    1    1    1
+c        0
+e             0
+```
+
+If we look now at our second row, **c** should now become 2 when we evaluate it as text1[j] == text2[i] == 'c'. 
+
+So what can we make of the relation?
+
+We can say that:
+```
+if text1[j] == text2[i]:
+    dp[i][j] = 1 + dp[i - 1][j - 1]
+```
+
+Where the previous entry dp[i-1][j-1] which indicates letters before c or the string 'ab' had a max subsequence of ?, in this case 1.
+
+What about when we don't have a match? This one is another straight forward answer as we simply take from the row above and column prior the max. Why? Because we're saying at this point did we have a higher subsequence previously on the last row or are we the current maximum subsequence?
+
+![Longest-Common-Subsequence](./docs/dynamicprogramming/longest_common_subsequence.png)
+
+
+```python
+def longestCommonSubsequence(text1: str, text2: str) -> int:
+    n = len(text1)
+    m = len(text2)
+
+    dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+    for i in range(m):
+        for j in range(n):
+            if text1[j] == text2[i]:
+                dp[i + 1][j + 1] = dp[i][j] + 1
+            else:
+                dp[i + 1][j + 1] = max(dp[i + 1][j], dp[i][j + 1])
+    return dp[-1][-1]
+
+text1='abcde'
+text2='ace'
+print(f'The Longest Common Subsequence between {text1} and {text2} is {longestCommonSubsequence(text1, text2)}.')
+```
+
+    The Longest Common Subsequence between abcde and ace is 3.
 
 
 
