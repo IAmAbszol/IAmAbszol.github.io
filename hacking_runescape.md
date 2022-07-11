@@ -231,8 +231,6 @@ public void onMenuOptionClicked(MenuOptionClicked menuOpt) {
 ```
 > Codeblock 3 - Finding the object/slot is bidirectional for finding both ways.
 
-
-
-```python
-
-```
+---
+- [Home](./index.md)
+- Blog by Kyle Darling
