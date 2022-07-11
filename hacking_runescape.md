@@ -42,7 +42,7 @@ As of right now the feature space does contain bountiful information though the 
 
 To be able to transcibe this type of decision from a prediction to peripheral that interacts with RuneLite a knowledge set from the client must be used to properly gather the correct object to choose from.
 
-![Prediction-Translate-Peripheral](./diagrams/translation_peripheral.png)
+![Prediction-Translate-Peripheral](./docs/hacking/diagrams/translation_peripheral.png)
 
 ### Action Space Decisions
 
